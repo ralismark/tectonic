@@ -1046,6 +1046,7 @@ void print_hex(int32_t n);
 void print_roman_int(int32_t n);
 void print_current_string(void);
 void print_scaled(scaled_t s);
+void warn_scaled(scaled_t s);
 
 /* xetex-pagebuilder */
 

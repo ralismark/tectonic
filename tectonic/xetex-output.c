@@ -654,3 +654,27 @@ print_scaled(scaled_t s)
         delta = delta * 10;
     } while (s > delta);
 }
+
+
+void
+warn_scaled(scaled_t s)
+{
+    scaled_t delta;
+
+    if (s < 0) {
+        ttstub_extend_warning("-");
+        s = -(int32_t) s;
+    }
+
+    ttstub_extend_warning("%d.", s / 0x10000);
+    s = 10 * (s % 0x10000) + 5;
+    delta = 10;
+
+    do {
+        if (delta > 0x10000)
+            s = s + 0x8000 - 50000;
+        ttstub_extend_warning("%c", '0' + (s / 0x10000));
+        s = 10 * (s % 0x10000);
+        delta = delta * 10;
+    } while (s > delta);
+}
