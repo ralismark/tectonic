@@ -57,6 +57,8 @@ typedef void *rust_input_handle_t;
 typedef struct tt_bridge_api_t {
     void *context;
 
+    void (*extend_warning)(void *context, char const *text);
+    void (*finish_warning)(void *context);
     void (*issue_warning)(void *context, char const *text);
     void (*issue_error)(void *context, char const *text);
 
@@ -99,6 +101,8 @@ NORETURN PRINTF_FUNC(1,2) int _tt_abort(const char *format, ...);
  * will one day eliminate all of the global state and get rid of all of
  * these. */
 
+PRINTF_FUNC(1,2) void ttstub_extend_warning(const char *format, ...);
+void ttstub_finish_warning(void);
 PRINTF_FUNC(1,2) void ttstub_issue_warning(const char *format, ...);
 PRINTF_FUNC(1,2) void ttstub_issue_error(const char *format, ...);
 PRINTF_FUNC(2,3) int ttstub_fprintf(rust_output_handle_t handle, const char *format, ...);

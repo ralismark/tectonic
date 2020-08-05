@@ -130,6 +130,7 @@ struct ExecutionState<'a, I: 'a + IoProvider> {
     input_handles: Vec<Box<InputHandle>>,
     #[allow(clippy::vec_box)]
     output_handles: Vec<Box<OutputHandle>>,
+    partial: String,
 }
 
 impl<'a, I: 'a + IoProvider> ExecutionState<'a, I> {
@@ -144,6 +145,7 @@ impl<'a, I: 'a + IoProvider> ExecutionState<'a, I> {
             status,
             output_handles: Vec::new(),
             input_handles: Vec::new(),
+            partial: String::new(),
         }
     }
 
@@ -467,6 +469,8 @@ impl<'a, I: 'a + IoProvider> ExecutionState<'a, I> {
 #[repr(C)]
 struct TectonicBridgeApi {
     context: *const libc::c_void,
+    extend_warning: *const libc::c_void,
+    finish_warning: *const libc::c_void,
     issue_warning: *const libc::c_void,
     issue_error: *const libc::c_void,
     get_file_md5: *const libc::c_void,
@@ -512,6 +516,24 @@ extern "C" {
 }
 
 // Entry points for the C/C++ API functions.
+
+extern "C" fn extend_warning<'a, I: 'a + IoProvider>(
+    es: *mut ExecutionState<'a, I>,
+    text: *const libc::c_char,
+) {
+    let es = unsafe { &mut *es };
+    let rtext = unsafe { CStr::from_ptr(text) };
+
+    es.partial += rtext.to_string_lossy().as_ref();
+}
+
+extern "C" fn finish_warning<'a, I: 'a + IoProvider>(
+    es: *mut ExecutionState<'a, I>,
+) {
+    let es = unsafe { &mut *es };
+
+    tt_warning!(es.status, "{}", es.partial);
+}
 
 extern "C" fn issue_warning<'a, I: 'a + IoProvider>(
     es: *mut ExecutionState<'a, I>,
@@ -810,6 +832,8 @@ impl TectonicBridgeApi {
     fn new<'a, I: 'a + IoProvider>(exec_state: &ExecutionState<'a, I>) -> TectonicBridgeApi {
         TectonicBridgeApi {
             context: (exec_state as *const ExecutionState<'a, I>) as *const libc::c_void,
+            extend_warning: extend_warning::<'a, I> as *const libc::c_void,
+            finish_warning: finish_warning::<'a, I> as *const libc::c_void,
             issue_warning: issue_warning::<'a, I> as *const libc::c_void,
             issue_error: issue_error::<'a, I> as *const libc::c_void,
             get_file_md5: get_file_md5::<'a, I> as *const libc::c_void,

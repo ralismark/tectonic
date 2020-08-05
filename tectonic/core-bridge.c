@@ -111,6 +111,23 @@ bibtex_simple_main(tt_bridge_api_t *api, char *aux_file_name)
 #define TGB tectonic_global_bridge
 
 PRINTF_FUNC(1,2) void
+ttstub_extend_warning(const char *format, ...)
+{
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(error_buf, BUF_SIZE, format, ap); /* Not ideal to (ab)use error_buf here */
+    va_end(ap);
+    TGB->extend_warning(TGB->context, error_buf);
+}
+
+void
+ttstub_finish_warning(void)
+{
+    TGB->finish_warning(TGB->context);
+}
+
+PRINTF_FUNC(1,2) void
 ttstub_issue_warning(const char *format, ...)
 {
     va_list ap;
