@@ -11833,7 +11833,9 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
     b16x4 i;
     int32_t pp, ppp = TEX_NULL;
     int32_t total_chars, k;
+    tt_warn_t warning;
 
+    warning = 0;
     last_badness = 0;
     r = get_node(BOX_NODE_SIZE);
     NODE_type(r) = HLIST_NODE;
@@ -12128,6 +12130,8 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                 last_badness = badness(x, total_stretch[NORMAL]);
                 if (last_badness > INTPAR(hbadness)) {
                     print_ln();
+                    warning = ttstub_warn_begin();
+                    capture_to_warning(warning);
                     if (last_badness > 100)
                         print_nl_cstr("Underfull");
                     else
@@ -12170,6 +12174,8 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                     mem[mem[q].b32.s1 + 1].b32.s1 = DIMENPAR(overfull_rule);
                 }
                 print_ln();
+                warning = ttstub_warn_begin();
+                capture_to_warning(warning);
                 print_nl_cstr("Overfull \\hbox (");
                 print_scaled(-(int32_t) x - total_shrink[NORMAL]);
                 print_cstr("pt too wide");
@@ -12181,6 +12187,8 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                 last_badness = badness(-(int32_t) x, total_shrink[NORMAL]);
                 if (last_badness > INTPAR(hbadness)) {
                     print_ln();
+                    warning = ttstub_warn_begin();
+                    capture_to_warning(warning);
                     print_nl_cstr("Tight \\hbox (badness ");
                     print_int(last_badness);
                     goto common_ending;
@@ -12214,6 +12222,9 @@ common_ending:
     show_box(r);
     end_diagnostic(true);
 
+    capture_to_warning(0);
+    ttstub_warn_finish(warning);
+
 exit:
     if (INTPAR(texxet) > 0) {
         /*1499: */
@@ -12238,6 +12249,8 @@ exit:
         if (LR_problems > 0) {
             {
                 print_ln();
+                warning = ttstub_warn_begin();
+                capture_to_warning(warning);
                 print_nl_cstr("\\endL or \\endR problem (");
                 print_int(LR_problems / 10000);
                 print_cstr(" missing, ");

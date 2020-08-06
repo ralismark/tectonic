@@ -1023,6 +1023,7 @@ void flush_math(void);
 
 /* xetex-output */
 
+void capture_to_warning(tt_warn_t warning);
 void print_ln(void);
 void print_raw_char(UTF16_code s, bool incr_offset);
 void print_char(int32_t s);
