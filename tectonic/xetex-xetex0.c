@@ -12413,10 +12413,14 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
                 last_badness = badness(x, total_stretch[NORMAL]);
                 if (last_badness > INTPAR(vbadness)) {
                     print_ln();
-                    if (last_badness > 100)
+                    if (last_badness > 100) {
+                        ttstub_extend_warning("Underfull");
                         print_nl_cstr("Underfull");
-                    else
+                    } else {
+                        ttstub_extend_warning("Loose");
                         print_nl_cstr("Loose");
+                    }
+                    ttstub_extend_warning(" \\vbox (badness %d", last_badness);
                     print_cstr(" \\vbox (badness ");
                     print_int(last_badness);
                     goto common_ending;
@@ -12447,6 +12451,10 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
             BOX_glue_set(r) = 1.0;
             if ((-(int32_t) x - total_shrink[NORMAL] > DIMENPAR(vfuzz))
                 || (INTPAR(vbadness) < 100)) {
+                ttstub_extend_warning("Overfull \\vbox (");
+                warn_scaled(-(int32_t) x - total_shrink[NORMAL]);
+                ttstub_extend_warning("pt too high");
+
                 print_ln();
                 print_nl_cstr("Overfull \\vbox (");
                 print_scaled(-(int32_t) x - total_shrink[NORMAL]);
@@ -12458,6 +12466,8 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
             if (mem[r + 5].b32.s1 != TEX_NULL) {    /*703: */
                 last_badness = badness(-(int32_t) x, total_shrink[NORMAL]);
                 if (last_badness > INTPAR(vbadness)) {
+                    ttstub_extend_warning("Tight \\vbox (badness %d", last_badness);
+
                     print_ln();
                     print_nl_cstr("Tight \\vbox (badness ");
                     print_int(last_badness);
@@ -12469,19 +12479,28 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
     }
 
 common_ending:
-    if (output_active)
+    if (output_active) {
+        ttstub_extend_warning(") has occurred while \\output is active");
         print_cstr(") has occurred while \\output is active");
-    else {
+    } else {
 
         if (pack_begin_line != 0) {
+            ttstub_issue_warning(") in alignment at lines %d--", abs(pack_begin_line));
+
             print_cstr(") in alignment at lines ");
             print_int(abs(pack_begin_line));
             print_cstr("--");
-        } else
+        } else {
+            ttstub_issue_warning(") detected at line ");
+
             print_cstr(") detected at line ");
+        }
+        ttstub_extend_warning("%d", line);
         print_int(line);
         print_ln();
     }
+    ttstub_finish_warning();
+
     begin_diagnostic();
     show_box(r);
     end_diagnostic(true);
