@@ -467,6 +467,9 @@ impl<'a, I: 'a + IoProvider> ExecutionState<'a, I> {
 #[repr(C)]
 struct TectonicBridgeApi {
     context: *const libc::c_void,
+    warn_begin: *const libc::c_void,
+    warn_finish: *const libc::c_void,
+    warn_append: *const libc::c_void,
     issue_warning: *const libc::c_void,
     issue_error: *const libc::c_void,
     get_file_md5: *const libc::c_void,
@@ -512,6 +515,37 @@ extern "C" {
 }
 
 // Entry points for the C/C++ API functions.
+
+struct Warning {
+    message: String,
+}
+
+extern "C" fn warn_begin() -> *mut Warning {
+    let warning = Box::new(Warning {
+        message: String::new(),
+    });
+    Box::into_raw(warning)
+}
+
+extern "C" fn warn_finish<'a, I: 'a + IoProvider>(
+    es: *mut ExecutionState<'a, I>,
+    warnp: *mut Warning,
+) {
+    let warning = unsafe { Box::from_raw(warnp as *mut Warning) };
+    let es = unsafe { &mut *es };
+
+    tt_warning!(es.status, "{}", warning.message);
+}
+
+extern "C" fn warn_append(
+    warning: *mut Warning,
+    text: *const libc::c_char,
+) {
+    let rwarn = unsafe { &mut *warning };
+    let rtext = unsafe { CStr::from_ptr(text) };
+
+    rwarn.message.push_str(&rtext.to_string_lossy());
+}
 
 extern "C" fn issue_warning<'a, I: 'a + IoProvider>(
     es: *mut ExecutionState<'a, I>,
@@ -810,6 +844,9 @@ impl TectonicBridgeApi {
     fn new<'a, I: 'a + IoProvider>(exec_state: &ExecutionState<'a, I>) -> TectonicBridgeApi {
         TectonicBridgeApi {
             context: (exec_state as *const ExecutionState<'a, I>) as *const libc::c_void,
+            warn_begin: warn_begin as *const libc::c_void,
+            warn_finish: warn_finish::<'a, I> as *const libc::c_void,
+            warn_append: warn_append as *const libc::c_void,
             issue_warning: issue_warning::<'a, I> as *const libc::c_void,
             issue_error: issue_error::<'a, I> as *const libc::c_void,
             get_file_md5: get_file_md5::<'a, I> as *const libc::c_void,
