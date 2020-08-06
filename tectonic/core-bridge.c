@@ -116,6 +116,12 @@ ttstub_warn_begin(void)
     return TGB->warn_begin();
 }
 
+diagnostic_t
+ttstub_error_begin(void)
+{
+    return TGB->error_begin();
+}
+
 void
 ttstub_diag_finish(diagnostic_t warning)
 {

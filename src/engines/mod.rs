@@ -26,7 +26,7 @@ use std::{io, ptr, slice};
 use crate::digest::DigestData;
 use crate::errors::{Error, ErrorKind, Result};
 use crate::io::{InputFeatures, InputHandle, InputOrigin, IoProvider, OpenResult, OutputHandle};
-use crate::status::StatusBackend;
+use crate::status::{StatusBackend, MessageKind};
 use crate::{tt_error, tt_warning};
 
 // Public sub-modules and reexports.
@@ -468,6 +468,7 @@ impl<'a, I: 'a + IoProvider> ExecutionState<'a, I> {
 struct TectonicBridgeApi {
     context: *const libc::c_void,
     warn_begin: *const libc::c_void,
+    error_begin: *const libc::c_void,
     diag_finish: *const libc::c_void,
     diag_append: *const libc::c_void,
     issue_warning: *const libc::c_void,
@@ -518,11 +519,21 @@ extern "C" {
 
 struct Diagnostic {
     message: String,
+    kind: MessageKind,
 }
 
 extern "C" fn warn_begin() -> *mut Diagnostic {
     let warning = Box::new(Diagnostic {
         message: String::new(),
+        kind: MessageKind::Warning,
+    });
+    Box::into_raw(warning)
+}
+
+extern "C" fn error_begin() -> *mut Diagnostic {
+    let warning = Box::new(Diagnostic {
+        message: String::new(),
+        kind: MessageKind::Error,
     });
     Box::into_raw(warning)
 }
@@ -534,7 +545,7 @@ extern "C" fn diag_finish<'a, I: 'a + IoProvider>(
     let rdiag = unsafe { Box::from_raw(diag as *mut Diagnostic) };
     let es = unsafe { &mut *es };
 
-    tt_warning!(es.status, "{}", rdiag.message);
+    es.status.report(rdiag.kind, format_args!("{}", rdiag.message), None);
 }
 
 extern "C" fn diag_append(
@@ -845,6 +856,7 @@ impl TectonicBridgeApi {
         TectonicBridgeApi {
             context: (exec_state as *const ExecutionState<'a, I>) as *const libc::c_void,
             warn_begin: warn_begin as *const libc::c_void,
+            error_begin: error_begin as *const libc::c_void,
             diag_finish: diag_finish::<'a, I> as *const libc::c_void,
             diag_append: diag_append as *const libc::c_void,
             issue_warning: issue_warning::<'a, I> as *const libc::c_void,
