@@ -166,12 +166,19 @@ buffer_overflow(void)
 static void
 conversion_error(int errcode)
 {
+    tt_warn_t warning;
+    warning = ttstub_warn_begin();
+    capture_to_warning(warning);
+
     begin_diagnostic();
     print_nl('U');
     print_c_string("nicode conversion failed (ICU error code = ");
     print_int(errcode);
     print_c_string(") discarding any remaining text");
     end_diagnostic(1);
+
+    capture_to_warning(0);
+    ttstub_warn_finish(warning);
 }
 
 
