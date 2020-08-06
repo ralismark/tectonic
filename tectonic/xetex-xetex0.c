@@ -12128,10 +12128,14 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                 last_badness = badness(x, total_stretch[NORMAL]);
                 if (last_badness > INTPAR(hbadness)) {
                     print_ln();
-                    if (last_badness > 100)
+                    if (last_badness > 100) {
                         print_nl_cstr("Underfull");
-                    else
+                        ttstub_extend_warning("Underfull");
+                    } else {
                         print_nl_cstr("Loose");
+                        ttstub_extend_warning("Loose");
+                    }
+                    ttstub_extend_warning(" \\hbox (badness %d", last_badness);
                     print_cstr(" \\hbox (badness ");
                     print_int(last_badness);
                     goto common_ending;
@@ -12169,6 +12173,10 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                     mem[q].b32.s1 = new_rule();
                     mem[mem[q].b32.s1 + 1].b32.s1 = DIMENPAR(overfull_rule);
                 }
+                ttstub_extend_warning("Overfull \\hbox (");
+                warn_scaled(-(int32_t) x - total_shrink[NORMAL]);
+                ttstub_extend_warning("pt too wide");
+
                 print_ln();
                 print_nl_cstr("Overfull \\hbox (");
                 print_scaled(-(int32_t) x - total_shrink[NORMAL]);
@@ -12180,6 +12188,8 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
             if (mem[r + 5].b32.s1 != TEX_NULL) {    /*692: */
                 last_badness = badness(-(int32_t) x, total_shrink[NORMAL]);
                 if (last_badness > INTPAR(hbadness)) {
+                    ttstub_extend_warning("Tight \\hbox (badness %d", last_badness);
+
                     print_ln();
                     print_nl_cstr("Tight \\hbox (badness ");
                     print_int(last_badness);
@@ -12191,22 +12201,33 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
     }
 
 common_ending:
-    if (output_active)
+    if (output_active) {
+        ttstub_extend_warning(") has occurred while \\output is active");
+
         print_cstr(") has occurred while \\output is active");
-    else {
+    } else {
 
         if (pack_begin_line != 0) {
-            if (pack_begin_line > 0)
+            if (pack_begin_line > 0) {
+                ttstub_extend_warning(") in paragraph at lines ");
                 print_cstr(") in paragraph at lines ");
-            else
+            } else {
+                ttstub_extend_warning(") in alignment at lines ");
                 print_cstr(") in alignment at lines ");
+            }
+            ttstub_extend_warning("%d--", abs(pack_begin_line));
             print_int(abs(pack_begin_line));
             print_cstr("--");
-        } else
+        } else {
+            ttstub_extend_warning(") detected at line ");
             print_cstr(") detected at line ");
+        }
+        ttstub_extend_warning("%d", line);
         print_int(line);
     }
+    ttstub_finish_warning();
     print_ln();
+    // TODO emit warnings for these
     font_in_short_display = FONT_BASE;
     short_display(mem[r + 5].b32.s1);
     print_ln();
@@ -12237,6 +12258,11 @@ exit:
         }
         if (LR_problems > 0) {
             {
+                ttstub_extend_warning("\\endL or \\endR problem (%d missing %d extra",
+                    LR_problems / 10000,
+                    LR_problems % 10000
+                    );
+
                 print_ln();
                 print_nl_cstr("\\endL or \\endR problem (");
                 print_int(LR_problems / 10000);
