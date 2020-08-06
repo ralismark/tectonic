@@ -166,9 +166,9 @@ buffer_overflow(void)
 static void
 conversion_error(int errcode)
 {
-    tt_warn_t warning;
+    diagnostic_t warning;
     warning = ttstub_warn_begin();
-    capture_to_warning(warning);
+    capture_to_diagnostic(warning);
 
     begin_diagnostic();
     print_nl('U');
@@ -177,8 +177,8 @@ conversion_error(int errcode)
     print_c_string(") discarding any remaining text");
     end_diagnostic(1);
 
-    capture_to_warning(0);
-    ttstub_warn_finish(warning);
+    capture_to_diagnostic(0);
+    ttstub_diag_finish(warning);
 }
 
 

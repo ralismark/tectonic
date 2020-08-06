@@ -8,24 +8,24 @@
 #include "xetex-synctex.h"
 #include "core-bridge.h"
 
-static tt_warn_t current_warning = 0;
+static diagnostic_t current_diagnostic = 0;
 
 void
-capture_to_warning(tt_warn_t warning)
+capture_to_diagnostic(diagnostic_t diagnostic)
 {
-    if (current_warning && warning) {
+    if (current_diagnostic && diagnostic) {
         /* Should this be an error? */
         ttstub_issue_warning("multiple warnings attempting to capture output");
     }
-    current_warning = warning;
+    current_diagnostic = diagnostic;
 }
 
 static void
 warn_char(int c)
 {
-    if (current_warning) {
+    if (current_diagnostic) {
         char bytes[2] = { c, 0 };
-        ttstub_warn_append(current_warning, bytes);
+        ttstub_diag_append(current_diagnostic, bytes);
     }
 }
 

@@ -10964,9 +10964,9 @@ new_native_character(internal_font_number f, UnicodeScalar c)
 
 void font_feature_warning(const void *featureNameP, int32_t featLen, const void *settingNameP, int32_t setLen)
 {
-    tt_warn_t warning;
+    diagnostic_t warning;
     warning = ttstub_warn_begin();
-    capture_to_warning(warning);
+    capture_to_diagnostic(warning);
 
     begin_diagnostic();
     print_nl_cstr("Unknown ");
@@ -10983,15 +10983,15 @@ void font_feature_warning(const void *featureNameP, int32_t featLen, const void 
     print_cstr("'.");
     end_diagnostic(false);
 
-    capture_to_warning(0);
-    ttstub_warn_finish(warning);
+    capture_to_diagnostic(0);
+    ttstub_diag_finish(warning);
 }
 
 void font_mapping_warning(const void *mappingNameP, int32_t mappingNameLen, int32_t warningType)
 {
-    tt_warn_t warning;
+    diagnostic_t warning;
     warning = ttstub_warn_begin();
-    capture_to_warning(warning);
+    capture_to_diagnostic(warning);
 
     begin_diagnostic();
     if (warningType == 0)
@@ -11020,15 +11020,15 @@ void font_mapping_warning(const void *mappingNameP, int32_t mappingNameLen, int3
     }
     end_diagnostic(false);
 
-    capture_to_warning(0);
-    ttstub_warn_finish(warning);
+    capture_to_diagnostic(0);
+    ttstub_diag_finish(warning);
 }
 
 void graphite_warning(void)
 {
-    tt_warn_t warning;
+    diagnostic_t warning;
     warning = ttstub_warn_begin();
-    capture_to_warning(warning);
+    capture_to_diagnostic(warning);
 
     begin_diagnostic();
     print_nl_cstr("Font `");
@@ -11039,8 +11039,8 @@ void graphite_warning(void)
     print_cstr("' does not support Graphite. Trying OpenType layout instead.");
     end_diagnostic(false);
 
-    capture_to_warning(0);
-    ttstub_warn_finish(warning);
+    capture_to_diagnostic(0);
+    ttstub_diag_finish(warning);
 }
 
 
@@ -11241,9 +11241,9 @@ void do_locale_linebreaks(int32_t s, int32_t len)
 
 void bad_utf8_warning(void)
 {
-    tt_warn_t warning;
+    diagnostic_t warning;
     warning = ttstub_warn_begin();
-    capture_to_warning(warning);
+    capture_to_diagnostic(warning);
 
     begin_diagnostic();
     print_nl_cstr("Invalid UTF-8 byte or sequence");
@@ -11858,7 +11858,7 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
     b16x4 i;
     int32_t pp, ppp = TEX_NULL;
     int32_t total_chars, k;
-    tt_warn_t warning;
+    diagnostic_t warning;
 
     warning = 0;
     last_badness = 0;
@@ -12156,7 +12156,7 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                 if (last_badness > INTPAR(hbadness)) {
                     print_ln();
                     warning = ttstub_warn_begin();
-                    capture_to_warning(warning);
+                    capture_to_diagnostic(warning);
                     if (last_badness > 100)
                         print_nl_cstr("Underfull");
                     else
@@ -12200,7 +12200,7 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                 }
                 print_ln();
                 warning = ttstub_warn_begin();
-                capture_to_warning(warning);
+                capture_to_diagnostic(warning);
                 print_nl_cstr("Overfull \\hbox (");
                 print_scaled(-(int32_t) x - total_shrink[NORMAL]);
                 print_cstr("pt too wide");
@@ -12213,7 +12213,7 @@ int32_t hpack(int32_t p, scaled_t w, small_number m)
                 if (last_badness > INTPAR(hbadness)) {
                     print_ln();
                     warning = ttstub_warn_begin();
-                    capture_to_warning(warning);
+                    capture_to_diagnostic(warning);
                     print_nl_cstr("Tight \\hbox (badness ");
                     print_int(last_badness);
                     goto common_ending;
@@ -12247,8 +12247,8 @@ common_ending:
     show_box(r);
     end_diagnostic(true);
 
-    capture_to_warning(0);
-    ttstub_warn_finish(warning);
+    capture_to_diagnostic(0);
+    ttstub_diag_finish(warning);
 
 exit:
     if (INTPAR(texxet) > 0) {
@@ -12275,7 +12275,7 @@ exit:
             {
                 print_ln();
                 warning = ttstub_warn_begin();
-                capture_to_warning(warning);
+                capture_to_diagnostic(warning);
                 print_nl_cstr("\\endL or \\endR problem (");
                 print_int(LR_problems / 10000);
                 print_cstr(" missing, ");
@@ -12306,7 +12306,7 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
     scaled_t s;
     int32_t g;
     glue_ord o;
-    tt_warn_t warning;
+    diagnostic_t warning;
 
     warning = 0;
     last_badness = 0;
@@ -12429,7 +12429,7 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
                     print_ln();
 
                     warning = ttstub_warn_begin();
-                    capture_to_warning(warning);
+                    capture_to_diagnostic(warning);
 
                     if (last_badness > 100)
                         print_nl_cstr("Underfull");
@@ -12468,7 +12468,7 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
                 print_ln();
 
                 warning = ttstub_warn_begin();
-                capture_to_warning(warning);
+                capture_to_diagnostic(warning);
 
                 print_nl_cstr("Overfull \\vbox (");
                 print_scaled(-(int32_t) x - total_shrink[NORMAL]);
@@ -12483,7 +12483,7 @@ int32_t vpackage(int32_t p, scaled_t h, small_number m, scaled_t l)
                     print_ln();
 
                     warning = ttstub_warn_begin();
-                    capture_to_warning(warning);
+                    capture_to_diagnostic(warning);
 
                     print_nl_cstr("Tight \\vbox (badness ");
                     print_int(last_badness);
@@ -12512,8 +12512,8 @@ common_ending:
     show_box(r);
     end_diagnostic(true);
 
-    capture_to_warning(0);
-    ttstub_warn_finish(warning);
+    capture_to_diagnostic(0);
+    ttstub_diag_finish(warning);
 
 exit:
     return r;
@@ -16094,7 +16094,7 @@ void show_whatever(void)
     unsigned char /*or_code */ m;
     int32_t l;
     int32_t n;
-    tt_warn_t warning;
+    diagnostic_t warning;
 
     warning = 0;
 
@@ -16102,7 +16102,7 @@ void show_whatever(void)
     case 3:
         {
             warning = ttstub_warn_begin();
-            capture_to_warning(warning);
+            capture_to_diagnostic(warning);
 
             begin_diagnostic();
             show_activities();
@@ -16122,7 +16122,7 @@ void show_whatever(void)
                     p = mem[cur_ptr + 1].b32.s1;
             }
             warning = ttstub_warn_begin();
-            capture_to_warning(warning);
+            capture_to_diagnostic(warning);
 
             begin_diagnostic();
             print_nl_cstr("> \\box");
@@ -16149,7 +16149,7 @@ void show_whatever(void)
     case 4:
         {
             warning = ttstub_warn_begin();
-            capture_to_warning(warning);
+            capture_to_diagnostic(warning);
 
             begin_diagnostic();
             show_save_groups();
@@ -16158,7 +16158,7 @@ void show_whatever(void)
     case 6:
         {
             warning = ttstub_warn_begin();
-            capture_to_warning(warning);
+            capture_to_diagnostic(warning);
 
             begin_diagnostic();
             print_nl_cstr("");
@@ -16210,8 +16210,8 @@ void show_whatever(void)
     }
     end_diagnostic(true);
 
-    capture_to_warning(0);
-    ttstub_warn_finish(warning);
+    capture_to_diagnostic(0);
+    ttstub_diag_finish(warning);
     /* Should this subsequent block be included in the warning? */
 
     {
