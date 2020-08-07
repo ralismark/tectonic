@@ -59,8 +59,8 @@ typedef struct tt_bridge_api_t {
 
     diagnostic_t (*warn_begin)(void);
     diagnostic_t (*error_begin)(void);
-    void (*diag_finish)(void *context, diagnostic_t warning);
-    void (*diag_append)(diagnostic_t warning, char const *text);
+    void (*diag_finish)(void *context, diagnostic_t diag);
+    void (*diag_append)(diagnostic_t diag, char const *text);
 
     void (*issue_warning)(void *context, char const *text);
     void (*issue_error)(void *context, char const *text);
@@ -106,8 +106,8 @@ NORETURN PRINTF_FUNC(1,2) int _tt_abort(const char *format, ...);
 
 diagnostic_t ttstub_warn_begin(void);
 diagnostic_t ttstub_error_begin(void);
-void ttstub_diag_finish(diagnostic_t warning);
-void ttstub_diag_append(diagnostic_t warning, char const *text);
+void ttstub_diag_finish(diagnostic_t diag);
+void ttstub_diag_append(diagnostic_t diag, char const *text);
 void ttstub_diag_vprintf(diagnostic_t diag, const char *format, va_list ap);
 PRINTF_FUNC(2,3) void ttstub_diag_printf(diagnostic_t diag, const char *format, ...);
 

@@ -123,15 +123,15 @@ ttstub_error_begin(void)
 }
 
 void
-ttstub_diag_finish(diagnostic_t warning)
+ttstub_diag_finish(diagnostic_t diag)
 {
-    TGB->diag_finish(TGB->context, warning);
+    TGB->diag_finish(TGB->context, diag);
 }
 
 void
-ttstub_diag_append(diagnostic_t warning, char const *text)
+ttstub_diag_append(diagnostic_t diag, char const *text)
 {
-    TGB->diag_append(warning, text);
+    TGB->diag_append(diag, text);
 }
 
 void
