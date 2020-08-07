@@ -108,6 +108,8 @@ diagnostic_t ttstub_warn_begin(void);
 diagnostic_t ttstub_error_begin(void);
 void ttstub_diag_finish(diagnostic_t warning);
 void ttstub_diag_append(diagnostic_t warning, char const *text);
+void ttstub_diag_vprintf(diagnostic_t diag, const char *format, va_list ap);
+PRINTF_FUNC(2,3) void ttstub_diag_printf(diagnostic_t diag, const char *format, ...);
 
 PRINTF_FUNC(1,2) void ttstub_issue_warning(const char *format, ...);
 PRINTF_FUNC(1,2) void ttstub_issue_error(const char *format, ...);
