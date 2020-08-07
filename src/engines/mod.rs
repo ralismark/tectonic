@@ -26,7 +26,7 @@ use std::{io, ptr, slice};
 use crate::digest::DigestData;
 use crate::errors::{Error, ErrorKind, Result};
 use crate::io::{InputFeatures, InputHandle, InputOrigin, IoProvider, OpenResult, OutputHandle};
-use crate::status::{StatusBackend, MessageKind};
+use crate::status::{MessageKind, StatusBackend};
 use crate::{tt_error, tt_warning};
 
 // Public sub-modules and reexports.
@@ -545,13 +545,11 @@ extern "C" fn diag_finish<'a, I: 'a + IoProvider>(
     let rdiag = unsafe { Box::from_raw(diag as *mut Diagnostic) };
     let es = unsafe { &mut *es };
 
-    es.status.report(rdiag.kind, format_args!("{}", rdiag.message), None);
+    es.status
+        .report(rdiag.kind, format_args!("{}", rdiag.message), None);
 }
 
-extern "C" fn diag_append(
-    diag: *mut Diagnostic,
-    text: *const libc::c_char,
-) {
+extern "C" fn diag_append(diag: *mut Diagnostic, text: *const libc::c_char) {
     let rdiag = unsafe { &mut *diag };
     let rtext = unsafe { CStr::from_ptr(text) };
 
