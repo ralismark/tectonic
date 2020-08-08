@@ -57,10 +57,14 @@ ensure_vbox(eight_bits n)
     if (NODE_type(p) != HLIST_NODE)
         return;
 
+    ttstub_diag_finish(diagnostic_error_here(
+        "Insertions can only be added to a vbox"));
+
     if (file_line_error_style_p)
         print_file_line();
     else
         print_nl_cstr("! ");
+
     print_cstr("Insertions can only be added to a vbox");
     help_ptr = 3;
     help_line[2] = "Tut tut: You're trying to \\insert into a";
@@ -130,8 +134,16 @@ fire_up(int32_t c)
         else
             print_nl_cstr("! ");
         print_cstr("");
+
+        diagnostic_t errmsg = diagnostic_error_here("");
+        capture_to_diagnostic(errmsg);
+
         print_esc_cstr("box");
         print_cstr("255 is not void");
+
+        capture_to_diagnostic(0);
+        ttstub_diag_finish(errmsg);
+
         help_ptr = 2;
         help_line[1] = "You shouldn't use \\box255 except in \\output routines.";
         help_line[0] = "Proceed, and I'll discard its present contents.";
@@ -358,6 +370,9 @@ fire_up(int32_t c)
     if (LOCAL(output_routine) != TEX_NULL && !semantic_pagination_enabled) {
         if (dead_cycles >= INTPAR(max_dead_cycles)) {
             /*1059: "Explain that too many dead cycles have happened in a row." */
+            ttstub_diag_finish(diagnostic_error_here(
+                "Output loop---%d consecutive dead cycles", dead_cycles));
+
             if (file_line_error_style_p)
                 print_file_line();
             else
@@ -599,9 +614,17 @@ build_page(void)
                         print_file_line();
                     else
                         print_nl_cstr("! ");
+
+                    diagnostic_t errmsg = diagnostic_error_here("");
+                    capture_to_diagnostic(errmsg);
+
                     print_cstr("Infinite glue shrinkage inserted from ");
                     print_esc_cstr("skip");
                     print_int(n);
+
+                    capture_to_diagnostic(0);
+                    ttstub_diag_finish(errmsg);
+
                     help_ptr = 3;
                     help_line[2] = "The correction glue for page breaking with insertions";
                     help_line[1] = "must have finite shrinkability. But you may proceed,";
@@ -747,6 +770,9 @@ build_page(void)
             page_so_far[6] += GLUE_SPEC_shrink(q);
 
             if (GLUE_SPEC_shrink_order(q) != NORMAL && GLUE_SPEC_shrink(q) != 0) {
+                ttstub_diag_finish(diagnostic_error_here(
+                    "Infinite glue shrinkage found on current page"));
+
                 if (file_line_error_style_p)
                     print_file_line();
                 else

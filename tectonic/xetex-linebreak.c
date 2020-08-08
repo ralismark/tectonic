@@ -2377,6 +2377,9 @@ finite_shrink(int32_t p)
     int32_t q;
     if (no_shrink_error_yet) {
         no_shrink_error_yet = false;
+        ttstub_diag_finish(diagnostic_error_here(
+            "Infinite glue shrinkage found in a paragraph"));
+
         {
             if (file_line_error_style_p)
                 print_file_line();

@@ -132,6 +132,9 @@ ship_out(int32_t p)
         BOX_height(p) + BOX_depth(p) + DIMENPAR(v_offset) > MAX_HALFWORD ||
         BOX_width(p) + DIMENPAR(h_offset) > MAX_HALFWORD)
     {
+        ttstub_diag_finish(diagnostic_error_here(
+            "Huge page cannot be shipped out"));
+
         if (file_line_error_style_p)
             print_file_line();
         else
@@ -2137,6 +2140,9 @@ write_out(int32_t p)
     get_token();
 
     if (cur_tok != CS_TOKEN_FLAG + END_WRITE) { /*1412:*/
+        ttstub_diag_finish(diagnostic_error_here(
+            "Unbalanced write command"));
+
         if (file_line_error_style_p)
             print_file_line();
         else

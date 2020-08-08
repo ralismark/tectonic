@@ -429,11 +429,18 @@ load_picture(bool is_pdf)
                         print_file_line();
                     else
                         print_nl_cstr("! ");
-                    print_cstr("Improper image ");
                 }
-                print_cstr("size (");
+
+                diagnostic_t errmsg = diagnostic_error_here("");
+                capture_to_diagnostic(errmsg);
+
+                print_cstr("Improper image size (");
                 print_scaled(cur_val);
                 print_cstr("pt) will be ignored");
+
+                capture_to_diagnostic(0);
+                ttstub_diag_finish(errmsg);
+
                 {
                     help_ptr = 2;
                     help_line[1] = "I can't scale images to zero or negative sizes,";
@@ -450,11 +457,18 @@ load_picture(bool is_pdf)
                         print_file_line();
                     else
                         print_nl_cstr("! ");
-                    print_cstr("Improper image ");
                 }
-                print_cstr("size (");
+
+                diagnostic_t errmsg = diagnostic_error_here("");
+                capture_to_diagnostic(errmsg);
+
+                print_cstr("Improper size (");
                 print_scaled(cur_val);
                 print_cstr("pt) will be ignored");
+
+                capture_to_diagnostic(0);
+                ttstub_diag_finish(errmsg);
+
                 {
                     help_ptr = 2;
                     help_line[1] = "I can't scale images to zero or negative sizes,";
@@ -651,10 +665,18 @@ load_picture(bool is_pdf)
                 print_file_line();
             else
                 print_nl_cstr("! ");
-            print_cstr("Unable to load picture or PDF file '");
         }
+
+        diagnostic_t errmsg = diagnostic_error_here("");
+        capture_to_diagnostic(errmsg);
+
+        print_cstr("Unable to load picture or PDF file '");
         print_file_name(cur_name, cur_area, cur_ext);
         print('\'');
+
+        capture_to_diagnostic(0);
+        ttstub_diag_finish(errmsg);
+
         if (result == -43) {
             {
                 help_ptr = 2;
