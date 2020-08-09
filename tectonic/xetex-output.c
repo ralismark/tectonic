@@ -35,17 +35,14 @@ diagnostic_error_here(const char *format, ...)
     if (level == 0) {
         ttstub_diag_append(error, "!");
     } else {
-        // full_source_filename_stack[level] is an int, not a string
-        capture_to_diagnostic(error);
-        print(full_source_filename_stack[level]);
-        capture_to_diagnostic(0);
-
         int32_t source_line = line;
         if (level != in_open) {
             source_line = line_stack[level + 1];
         }
 
-        ttstub_diag_printf(error, ":%d: ", source_line);
+        char* filename = gettexstring(full_source_filename_stack[level]);
+        ttstub_diag_printf(error, "%s:%d: ", filename, source_line);
+        free(filename);
     }
 
     va_list ap;
