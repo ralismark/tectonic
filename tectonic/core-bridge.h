@@ -57,8 +57,8 @@ typedef void *diagnostic_t;
 typedef struct tt_bridge_api_t {
     void *context;
 
-    diagnostic_t (*warn_begin)(void);
-    diagnostic_t (*error_begin)(void);
+    diagnostic_t (*diag_warn_begin)(void);
+    diagnostic_t (*diag_error_begin)(void);
     void (*diag_finish)(void *context, diagnostic_t diag);
     void (*diag_append)(diagnostic_t diag, char const *text);
 

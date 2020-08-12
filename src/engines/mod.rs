@@ -467,8 +467,8 @@ impl<'a, I: 'a + IoProvider> ExecutionState<'a, I> {
 #[repr(C)]
 struct TectonicBridgeApi {
     context: *const libc::c_void,
-    warn_begin: *const libc::c_void,
-    error_begin: *const libc::c_void,
+    diag_warn_begin: *const libc::c_void,
+    diag_error_begin: *const libc::c_void,
     diag_finish: *const libc::c_void,
     diag_append: *const libc::c_void,
     issue_warning: *const libc::c_void,
@@ -522,7 +522,7 @@ struct Diagnostic {
     kind: MessageKind,
 }
 
-extern "C" fn warn_begin() -> *mut Diagnostic {
+extern "C" fn diag_warn_begin() -> *mut Diagnostic {
     let warning = Box::new(Diagnostic {
         message: String::new(),
         kind: MessageKind::Warning,
@@ -530,7 +530,7 @@ extern "C" fn warn_begin() -> *mut Diagnostic {
     Box::into_raw(warning)
 }
 
-extern "C" fn error_begin() -> *mut Diagnostic {
+extern "C" fn diag_error_begin() -> *mut Diagnostic {
     let warning = Box::new(Diagnostic {
         message: String::new(),
         kind: MessageKind::Error,
@@ -853,8 +853,8 @@ impl TectonicBridgeApi {
     fn new<'a, I: 'a + IoProvider>(exec_state: &ExecutionState<'a, I>) -> TectonicBridgeApi {
         TectonicBridgeApi {
             context: (exec_state as *const ExecutionState<'a, I>) as *const libc::c_void,
-            warn_begin: warn_begin as *const libc::c_void,
-            error_begin: error_begin as *const libc::c_void,
+            diag_warn_begin: diag_warn_begin as *const libc::c_void,
+            diag_error_begin: diag_error_begin as *const libc::c_void,
             diag_finish: diag_finish::<'a, I> as *const libc::c_void,
             diag_append: diag_append as *const libc::c_void,
             issue_warning: issue_warning::<'a, I> as *const libc::c_void,

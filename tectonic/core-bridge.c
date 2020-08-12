@@ -113,13 +113,13 @@ bibtex_simple_main(tt_bridge_api_t *api, char *aux_file_name)
 diagnostic_t
 ttstub_warn_begin(void)
 {
-    return TGB->warn_begin();
+    return TGB->diag_warn_begin();
 }
 
 diagnostic_t
 ttstub_error_begin(void)
 {
-    return TGB->error_begin();
+    return TGB->diag_error_begin();
 }
 
 void
