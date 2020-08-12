@@ -141,7 +141,7 @@ ttstub_diag_vprintf(diagnostic_t diag, const char *format, va_list ap)
     TGB->diag_append(diag, error_buf);
 }
 
-void
+PRINTF_FUNC(2,3) void
 ttstub_diag_printf(diagnostic_t diag, const char *format, ...)
 {
     va_list ap;
