@@ -13,6 +13,7 @@ use super::{
 };
 use crate::errors::{ErrorKind, Result};
 use crate::status::StatusBackend;
+use crate::tt_warning;
 
 /// FilesystemPrimaryInputIo is an I/O provider that provides the TeX "primary input"
 /// file off of the filesystem. This can *pretty much* be achieved with
@@ -62,6 +63,7 @@ pub struct FilesystemIo {
     writes_allowed: bool,
     absolute_allowed: bool,
     hidden_input_paths: HashSet<PathBuf>,
+    reported_paths: HashSet<PathBuf>,
 }
 
 impl FilesystemIo {
@@ -76,6 +78,7 @@ impl FilesystemIo {
             writes_allowed,
             absolute_allowed,
             hidden_input_paths,
+            reported_paths: HashSet::new(),
         }
     }
 
@@ -120,7 +123,7 @@ impl IoProvider for FilesystemIo {
     fn input_open_name(
         &mut self,
         name: &OsStr,
-        _status: &mut dyn StatusBackend,
+        status: &mut dyn StatusBackend,
     ) -> OpenResult<InputHandle> {
         let path = match self.construct_path(name) {
             Ok(p) => p,
@@ -131,7 +134,7 @@ impl IoProvider for FilesystemIo {
             return OpenResult::NotAvailable;
         }
 
-        let f = match File::open(path) {
+        let f = match File::open(path.clone()) {
             Ok(f) => f,
             Err(e) => {
                 return if e.kind() == io::ErrorKind::NotFound {
@@ -147,6 +150,16 @@ impl IoProvider for FilesystemIo {
                 };
             }
         };
+
+        // Report the absolute path only if we're able to open it
+        if path.is_absolute() && !self.reported_paths.contains(&path) {
+            tt_warning!(
+                status,
+                "accessing absolute path '{}'; build may not be reproducible on other systems",
+                path.display()
+            );
+            self.reported_paths.insert(path);
+        }
 
         OpenResult::Ok(InputHandle::new(
             name,
