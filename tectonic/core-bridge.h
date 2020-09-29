@@ -67,14 +67,8 @@ NORETURN PRINTF_FUNC(1,2) int _tt_abort(const char *format, ...);
 
 // See xetex-xetexd.h for other useful functions for producing diagnostics.
 
-// Create a diagnostic that represents a warning
-diagnostic_t ttstub_diag_warn_begin(void);
-// Create a diagnostic that represents an error
-diagnostic_t ttstub_diag_error_begin(void);
 // Finish and emit a diagnostic
 void ttstub_diag_finish(diagnostic_t diag);
-// Append a string the diagnostic's message
-void ttstub_diag_append(diagnostic_t diag, char const *text);
 // Convenience functions to append to the message using printf specifiers
 PRINTF_FUNC(2,3) void ttstub_diag_printf(diagnostic_t diag, const char *format, ...);
 // Append to diagnostic message - for higher-level abstractions.

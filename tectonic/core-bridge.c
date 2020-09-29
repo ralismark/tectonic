@@ -112,28 +112,10 @@ bibtex_simple_main(const tt_bridge_api_t *api, const BibtexConfig *config, const
 
 #define TGB tectonic_global_bridge
 
-diagnostic_t
-ttstub_diag_warn_begin(void)
-{
-    return diag_warn_begin();
-}
-
-diagnostic_t
-ttstub_diag_error_begin(void)
-{
-    return diag_error_begin();
-}
-
 void
 ttstub_diag_finish(diagnostic_t diag)
 {
     diag_finish(TGB->context, diag);
-}
-
-void
-ttstub_diag_append(diagnostic_t diag, char const *text)
-{
-    diag_append(diag, text);
 }
 
 PRINTF_FUNC(2,0) void

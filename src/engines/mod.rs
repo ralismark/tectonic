@@ -551,8 +551,9 @@ pub struct Diagnostic {
     kind: MessageKind,
 }
 
+/// Create a diagnostic that represents a warning
 #[no_mangle]
-pub extern "C" fn diag_warn_begin() -> *mut Diagnostic {
+pub extern "C" fn ttstub_diag_warn_begin() -> *mut Diagnostic {
     let warning = Box::new(Diagnostic {
         message: String::new(),
         kind: MessageKind::Warning,
@@ -560,8 +561,9 @@ pub extern "C" fn diag_warn_begin() -> *mut Diagnostic {
     Box::into_raw(warning)
 }
 
+/// Create a diagnostic that represents an error
 #[no_mangle]
-pub extern "C" fn diag_error_begin() -> *mut Diagnostic {
+pub extern "C" fn ttstub_diag_error_begin() -> *mut Diagnostic {
     let warning = Box::new(Diagnostic {
         message: String::new(),
         kind: MessageKind::Error,
@@ -577,8 +579,9 @@ pub extern "C" fn diag_finish(es: &mut ExecutionState, diag: *mut Diagnostic) {
         .report(rdiag.kind, format_args!("{}", rdiag.message), None);
 }
 
+/// Append a string the diagnostic's message
 #[no_mangle]
-pub extern "C" fn diag_append(diag: &mut Diagnostic, text: *const libc::c_char) {
+pub extern "C" fn ttstub_diag_append(diag: &mut Diagnostic, text: *const libc::c_char) {
     let rtext = unsafe { CStr::from_ptr(text) };
 
     diag.message.push_str(&rtext.to_string_lossy());
