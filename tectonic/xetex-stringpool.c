@@ -39,7 +39,7 @@ load_pool_strings(int32_t spare_size)
 }
 
 
-
+/*
 int32_t length(str_number s)
 {
     if ((s >= 65536L))
@@ -53,6 +53,7 @@ int32_t length(str_number s)
     else
         return 8;
 }
+*/
 
 str_number make_string(void)
 {
@@ -107,6 +108,7 @@ bool str_eq_buf(str_number s, int32_t k)
     return true;
 }
 
+/*
 bool str_eq_str(str_number s, str_number t)
 {
     pool_pointer j, k;
@@ -147,6 +149,7 @@ bool str_eq_str(str_number s, str_number t)
     }
     return true;
 }
+*/
 
 str_number search_string(str_number search)
 {

@@ -56,6 +56,7 @@ pub mod engines;
 pub mod errors;
 pub mod io;
 pub mod status;
+mod translate;
 pub mod unstable_opts;
 
 // Note: this module is intentionally *not* gated by #[cfg(test)] -- see its
