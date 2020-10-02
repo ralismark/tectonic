@@ -58,6 +58,7 @@ pub mod engines;
 pub mod errors;
 pub mod io;
 pub mod status;
+mod translate;
 pub mod unstable_opts;
 #[cfg(feature = "serialization")]
 pub mod workspace;

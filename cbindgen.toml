@@ -7,12 +7,16 @@ language = "C"
 # typedef Name struct {} Name
 style = "both"
 
+[defines]
+"cbindgen_bibtex" = "BIBTEX_H"
+
 [export]
 exclude = [ "DIGEST_LEN" ]
 
 # Table of name conversions to apply to item names
 [export.rename]
 TectonicBridgeApi = "tt_bridge_api_t"
+StrNumber = "str_number"
 
 [fn]
 sort_by = "None" # Make cbindgen not mess with our declaration order

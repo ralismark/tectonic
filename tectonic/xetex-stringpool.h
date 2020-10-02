@@ -14,11 +14,11 @@
 BEGIN_EXTERN_C
 
 int load_pool_strings(int32_t spare_size);
-int32_t length(str_number s);
+// int32_t length(str_number s);
 str_number make_string(void);
 void append_str(str_number s);
 bool str_eq_buf(str_number s, int32_t k);
-bool str_eq_str(str_number s, str_number t);
+// bool str_eq_str(str_number s, str_number t);
 str_number search_string(str_number search);
 str_number slow_make_string(void);
 
