@@ -413,6 +413,7 @@ fn main() {
         // "-Wsuggest-attribute=const",
         // "-Wsuggest-attribute=pure",
         // "-Wunreachable-code-aggresive",
+        "-Wno-deprecated-declarations", // This is for harfbuzz
         "-Wno-unused-parameter",
         "-Wno-implicit-fallthrough",
         "-fno-exceptions",
