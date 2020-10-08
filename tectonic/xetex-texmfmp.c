@@ -315,8 +315,9 @@ gettexstring (str_number s)
 
   if (s >= 65536L)
       len = str_start[s + 1 - 65536L] - str_start[s - 65536L];
-  else
-      len = 0;
+  else {
+      len = 0; ttstub_issue_warning("gettexstring: short string s=%d", s);
+  }
 
   name = xmalloc(len * 3 + 1); /* max UTF16->UTF8 expansion
                                   (code units, not bytes) */
