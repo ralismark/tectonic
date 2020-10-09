@@ -121,12 +121,6 @@ impl TexEngine {
         let bridge = TectonicBridgeApi::new(&mut state);
 
         // initialize globals
-
-        let v = if unstables.shell_escape { 1 } else { 0 };
-        unsafe {
-            super::tt_xetex_set_int_variable(b"shell_escape_enabled\0".as_ptr() as _, v);
-        }
-
         let mut halt_on_error = self.halt_on_error;
         if unstables.continue_on_errors {
             halt_on_error = false; // command-line override
@@ -136,21 +130,23 @@ impl TexEngine {
             super::tt_xetex_set_int_variable(b"halt_on_error_p\0".as_ptr() as _, v);
         }
 
-        let v = if self.initex_mode { 1 } else { 0 };
         unsafe {
-            super::tt_xetex_set_int_variable(b"in_initex_mode\0".as_ptr() as _, v);
-        }
-        let v = if self.synctex_enabled { 1 } else { 0 };
-        unsafe {
-            super::tt_xetex_set_int_variable(b"synctex_enabled\0".as_ptr() as _, v);
-        }
-        let v = if self.semantic_pagination_enabled {
-            1
-        } else {
-            0
-        };
-        unsafe {
-            super::tt_xetex_set_int_variable(b"semantic_pagination_enabled\0".as_ptr() as _, v);
+            super::tt_xetex_set_int_variable(
+                b"shell_escape_enabled\0".as_ptr() as _,
+                unstables.shell_escape as _,
+            );
+            super::tt_xetex_set_int_variable(
+                b"in_initex_mode\0".as_ptr() as _,
+                self.initex_mode as _,
+            );
+            super::tt_xetex_set_int_variable(
+                b"synctex_enabled\0".as_ptr() as _,
+                self.synctex_enabled as _,
+            );
+            super::tt_xetex_set_int_variable(
+                b"semantic_pagination_enabled\0".as_ptr() as _,
+                self.semantic_pagination_enabled as _,
+            );
         }
 
         unsafe {
