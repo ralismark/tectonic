@@ -24,7 +24,7 @@ use tectonic::{errmsg, tt_error, tt_note};
 struct CliOptions {
     /// The file to process, or "-" to process the standard input stream
     #[structopt(name = "input")]
-    input: String,
+    input: Option<String>,
     /// The name of the "format" file used to initialize the TeX engine
     #[structopt(long, short, name = "path", default_value = "latex")]
     format: String,
@@ -107,7 +107,9 @@ fn inner(args: CliOptions, config: PersistentConfig, status: &mut dyn StatusBack
 
     // Input and path setup
 
-    let input_path = args.input;
+    let input_path = args
+        .input
+        .ok_or("No input specified.\n\nFor more information try --help")?;
     if input_path == "-" {
         // Don't provide an input path to the ProcessingSession, so it will default to stdin.
         sess_builder.tex_input_name("texput.tex");
