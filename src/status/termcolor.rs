@@ -115,6 +115,10 @@ impl TermcolorStatusBackend {
 
 impl StatusBackend for TermcolorStatusBackend {
     fn ereport(&mut self, mut kind: MessageKind, err: &Error) {
+        if kind == MessageKind::Note && self.chatter <= ChatterLevel::Minimal {
+            return;
+        }
+
         let mut prefix = None;
         for item in err.iter() {
             self.generic_message(kind, prefix, format_args!("{}", item));
