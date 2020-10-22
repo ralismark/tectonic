@@ -1,5 +1,3 @@
-use std::fmt::Arguments;
-
 use super::{ChatterLevel, MessageKind, StatusBackend};
 use crate::errors::Error;
 use std::io::{self, Write};
@@ -15,29 +13,32 @@ impl PlainStatusBackend {
 }
 
 impl StatusBackend for PlainStatusBackend {
-    fn report(&mut self, kind: MessageKind, args: Arguments, err: Option<&Error>) {
+    fn ereport(&mut self, kind: MessageKind, err: &Error) {
         if kind == MessageKind::Note && self.chatter <= ChatterLevel::Minimal {
             return;
         }
 
-        let prefix = match kind {
+        let mut prefix = match kind {
             MessageKind::Note => "note:",
             MessageKind::Warning => "warning:",
             MessageKind::Error => "error:",
         };
-        if kind == MessageKind::Note {
-            println!("{} {}", prefix, args);
-        } else {
-            eprintln!("{} {}", prefix, args);
+
+        // To match the behaviour of PlainStatusBackend.report()
+        let mut use_stdout = kind == MessageKind::Note;
+
+        for item in err.iter() {
+            if use_stdout {
+                println!("{} {}", prefix, item);
+            } else {
+                eprintln!("{} {}", prefix, item);
+            }
+            prefix = "caused by: ";
+            use_stdout = false;
         }
-        if let Some(e) = err {
-            for item in e.iter() {
-                eprintln!("caused by: {}", item);
-            }
-            if let Some(backtrace) = e.backtrace() {
-                eprintln!("debugging: backtrace follows:");
-                eprintln!("{:?}", backtrace);
-            }
+
+        if let Some(backtrace) = err.backtrace() {
+            eprintln!("debugging: backtrace follows:\n{:?}", backtrace);
         }
     }
 
@@ -57,11 +58,7 @@ impl StatusBackend for PlainStatusBackend {
 
     fn note_highlighted(&mut self, before: &str, highlighted: &str, after: &str) {
         if self.chatter > ChatterLevel::Minimal {
-            self.report(
-                MessageKind::Note,
-                format_args!("{}{}{}", before, highlighted, after),
-                None,
-            );
+            println!("note: {}{}{}", before, highlighted, after);
         }
     }
 

@@ -15,7 +15,7 @@ use tectonic::driver::{OutputFormat, PassSetting, ProcessingSessionBuilder};
 use tectonic::errors::{ErrorKind, Result};
 use tectonic::status::plain::PlainStatusBackend;
 use tectonic::status::termcolor::TermcolorStatusBackend;
-use tectonic::status::{ChatterLevel, StatusBackend};
+use tectonic::status::{ChatterLevel, MessageKind, StatusBackend};
 use tectonic::unstable_opts::{UnstableArg, UnstableOptions};
 use tectonic::{errmsg, tt_error, tt_note};
 

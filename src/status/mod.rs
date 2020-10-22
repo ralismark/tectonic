@@ -8,7 +8,6 @@ pub mod plain;
 pub mod termcolor;
 
 use std::cmp;
-use std::fmt::Arguments;
 use std::result::Result as StdResult;
 use std::str::FromStr;
 
@@ -89,10 +88,9 @@ pub trait StatusBackend {
     /// high-level than intended for this trait, but we can provide a nice
     /// sensible default implementation, so whatever.
     fn note_highlighted(&mut self, before: &str, highlighted: &str, after: &str) {
-        self.report(
+        self.ereport(
             MessageKind::Note,
-            format_args!("{}{}{}", before, highlighted, after),
-            None,
+            &Error::from_kind(format!("{}{}{}", before, highlighted, after).into()),
         )
     }
 
@@ -109,10 +107,21 @@ pub trait StatusBackend {
 #[macro_export]
 macro_rules! tt_note {
     ($dest:expr, $( $fmt_args:expr ),*) => {
-        $dest.report($crate::status::MessageKind::Note, format_args!($( $fmt_args ),*), None)
+        $dest.ereport(
+            $crate::status::MessageKind::Note,
+            &$crate::errors::Error::from_kind(
+                format!($( $fmt_args ),*).into(),
+            ),
+        )
     };
     ($dest:expr, $( $fmt_args:expr ),* ; $err:expr) => {
-        $dest.report($crate::status::MessageKind::Note, format_args!($( $fmt_args ),*), Some(&$err))
+        $dest.ereport(
+            $crate::status::MessageKind::Note,
+            &$crate::errors::Error::chain_err(
+                $err,
+                || format!($( $fmt_args ),*),
+            ),
+        )
     };
 }
 
@@ -123,10 +132,21 @@ macro_rules! tt_note {
 #[macro_export]
 macro_rules! tt_warning {
     ($dest:expr, $( $fmt_args:expr ),*) => {
-        $dest.report($crate::status::MessageKind::Warning, format_args!($( $fmt_args ),*), None)
+        $dest.ereport(
+            $crate::status::MessageKind::Warning,
+            &$crate::errors::Error::from_kind(
+                format!($( $fmt_args ),*).into(),
+            ),
+        )
     };
     ($dest:expr, $( $fmt_args:expr ),* ; $err:expr) => {
-        $dest.report($crate::status::MessageKind::Warning, format_args!($( $fmt_args ),*), Some(&$err))
+        $dest.ereport(
+            $crate::status::MessageKind::Warning,
+            &$crate::errors::Error::chain_err(
+                $err,
+                || format!($( $fmt_args ),*),
+            ),
+        )
     };
 }
 
@@ -137,10 +157,21 @@ macro_rules! tt_warning {
 #[macro_export]
 macro_rules! tt_error {
     ($dest:expr, $( $fmt_args:expr ),*) => {
-        $dest.report($crate::status::MessageKind::Error, format_args!($( $fmt_args ),*), None)
+        $dest.ereport(
+            $crate::status::MessageKind::Error,
+            &$crate::errors::Error::from_kind(
+                format!($( $fmt_args ),*).into(),
+            ),
+        )
     };
     ($dest:expr, $( $fmt_args:expr ),* ; $err:expr) => {
-        $dest.report($crate::status::MessageKind::Error, format_args!($( $fmt_args ),*), Some(&$err))
+        $dest.ereport(
+            $crate::status::MessageKind::Error,
+            &$crate::errors::Error::chain_err(
+                $err,
+                || format!($( $fmt_args ),*),
+            ),
+        )
     };
 }
 
@@ -154,6 +185,6 @@ impl NoopStatusBackend {
 }
 
 impl StatusBackend for NoopStatusBackend {
-    fn report(&mut self, _kind: MessageKind, _args: Arguments, _err: Option<&Error>) {}
+    fn ereport(&mut self, _kind: MessageKind, _err: &Error) {}
     fn dump_error_logs(&mut self, _output: &[u8]) {}
 }

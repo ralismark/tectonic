@@ -151,20 +151,20 @@ macro_rules! tt_error_styled {
 }
 
 impl StatusBackend for TermcolorStatusBackend {
-    fn report(&mut self, kind: MessageKind, args: Arguments, err: Option<&Error>) {
-        self.generic_message(kind, None, args);
+    fn ereport(&mut self, mut kind: MessageKind, err: &Error) {
+        let mut prefix = None;
+        for item in err.iter() {
+            self.generic_message(kind, prefix, format_args!("{}", item));
+            // A bit of a messy way to print the top error differently
+            prefix = Some("caused by:");
+            kind = MessageKind::Error;
+        }
 
-        if let Some(e) = err {
-            for item in e.iter() {
-                self.generic_message(kind, Some("caused by:"), format_args!("{}", item));
-            }
-
-            if let Some(backtrace) = e.backtrace() {
-                self.generic_message(kind, Some("debugging:"), format_args!("backtrace follows:"));
-                self.with_stream(kind, |s| {
-                    writeln!(s, "{:?}", backtrace).expect("backtrace dump failed");
-                });
-            }
+        if let Some(backtrace) = err.backtrace() {
+            self.generic_message(kind, Some("debugging:"), format_args!("backtrace follows:"));
+            self.with_stream(kind, |s| {
+                writeln!(s, "{:?}", backtrace).expect("backtrace dump failed");
+            });
         }
     }
 

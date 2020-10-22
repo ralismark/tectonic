@@ -561,7 +561,7 @@ pub extern "C" fn diag_finish(es: &mut ExecutionState, diag: *mut Diagnostic) {
     let rdiag = unsafe { Box::from_raw(diag as *mut Diagnostic) };
 
     es.status
-        .report(rdiag.kind, format_args!("{}", rdiag.message), None);
+        .ereport(rdiag.kind, &ErrorKind::Msg(rdiag.message).into());
 }
 
 /// Append a string the diagnostic's message
