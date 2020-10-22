@@ -106,48 +106,11 @@ impl TermcolorStatusBackend {
     // so we put them here to minimize the cross-section of the StatusBackend
     // trait.
 
-    pub fn note_styled(&mut self, args: Arguments) {
-        if self.chatter > ChatterLevel::Minimal {
-            writeln!(self.stdout, "{}", args).expect("write to stdout failed");
-        }
-    }
-
-    pub fn error_styled(&mut self, args: Arguments) {
+    fn error_styled(&mut self, args: Arguments) {
         self.styled(MessageKind::Error, |s| {
             writeln!(s, "{}", args).expect("write to stderr failed");
         });
     }
-
-    pub fn bare_error(&mut self, err: &Error) {
-        let mut prefix = "error:";
-
-        for item in err.iter() {
-            self.generic_message(MessageKind::Error, Some(prefix), format_args!("{}", item));
-            prefix = "caused by:";
-        }
-
-        if let Some(backtrace) = err.backtrace() {
-            self.generic_message(
-                MessageKind::Error,
-                Some("debugging:"),
-                format_args!("backtrace follows:"),
-            );
-            self.with_stream(MessageKind::Error, |s| {
-                writeln!(s, "{:?}", backtrace).expect("backtrace dump failed");
-            });
-        }
-    }
-}
-
-/// Show formatted text to the user, styled as an error message.
-///
-/// On the console, this will normally cause the printed text to show up in
-/// bright red.
-#[macro_export]
-macro_rules! tt_error_styled {
-    ($dest:expr, $( $fmt_args:expr ),*) => {
-        $dest.error_styled(format_args!($( $fmt_args ),*))
-    };
 }
 
 impl StatusBackend for TermcolorStatusBackend {
@@ -202,18 +165,16 @@ impl StatusBackend for TermcolorStatusBackend {
     }
 
     fn dump_error_logs(&mut self, output: &[u8]) {
-        tt_error_styled!(
-            self,
+        self.error_styled(format_args!(
             "==============================================================================="
-        );
+        ));
 
         self.stderr
             .write_all(output)
             .expect("write to stderr failed");
 
-        tt_error_styled!(
-            self,
+        self.error_styled(format_args!(
             "==============================================================================="
-        );
+        ));
     }
 }
