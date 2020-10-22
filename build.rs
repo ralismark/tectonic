@@ -201,6 +201,7 @@ fn main() {
         .write_to_file(&cbindgen_header_path);
 
     println!("cargo:rerun-if-changed=src/engines/mod.rs");
+    println!("cargo:rerun-if-changed=src/translate/");
 
     // Re-export $TARGET during the build so that our executable tests know
     // what environment variable CARGO_TARGET_@TARGET@_RUNNER to check when
