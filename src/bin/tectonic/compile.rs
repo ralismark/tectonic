@@ -26,9 +26,10 @@ use tectonic::{
 
 #[derive(Debug, StructOpt)]
 pub struct CompileOptions {
-    /// The file to process, or "-" to process the standard input stream
+    /// The file to process, or "-" to process the standard input stream. This actually isn't
+    /// optional - it's implemented this way to allow -Zhelp without passing a file.
     #[structopt(name = "input")]
-    input: String,
+    input: Option<String>,
 
     /// The name of the "format" file used to initialize the TeX engine
     #[structopt(long, short, name = "path", default_value = "latex")]
@@ -122,7 +123,9 @@ impl CompileOptions {
 
         // Input and path setup
 
-        let input_path = self.input;
+        let input_path = self
+            .input
+            .ok_or("No input specified.\n\nFor more information try --help")?;
         if input_path == "-" {
             // Don't provide an input path to the ProcessingSession, so it will default to stdin.
             sess_builder.tex_input_name("texput.tex");
