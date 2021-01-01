@@ -23,6 +23,7 @@ use std::borrow::Cow;
 use std::ffi::{CStr, OsStr, OsString};
 use std::io::{Read, SeekFrom, Write};
 use std::path::Path;
+use std::process::Command;
 use std::sync::Mutex;
 use std::{io, ptr, slice};
 
@@ -832,6 +833,36 @@ pub extern "C" fn input_close(es: &mut ExecutionState, handle: *mut InputHandle)
         1
     } else {
         0
+    }
+}
+
+#[cfg(unix)]
+const SHELL: [&str; 2] = ["sh", "-c"];
+
+#[cfg(windows)]
+const SHELL: [&str; 2] = ["cmd.exe", "/c"];
+
+#[no_mangle]
+pub extern "C" fn runsystem(es: &mut ExecutionState, cmd: *const u16, len: libc::size_t) {
+    let rcmd = unsafe { slice::from_raw_parts(cmd, len) };
+    let rcmd = match String::from_utf16(rcmd) {
+        Ok(cmd) => cmd,
+        Err(_) => {
+            tt_error!(es.status, "command was not valid utf-16");
+            return;
+        }
+    };
+
+    // Let the shell handle quotes & argument splitting
+    match Command::new(SHELL[0]).arg(SHELL[1]).arg(&rcmd).status() {
+        Ok(status) => match status.code() {
+            Some(0) => {}
+            Some(n) => tt_warning!(es.status, "command finished with exit code {}", n),
+            None => tt_warning!(es.status, "command was terminated by signal"),
+        },
+        Err(err) => {
+            tt_error!(es.status, "runsystem failed"; err.into());
+        }
     }
 }
 

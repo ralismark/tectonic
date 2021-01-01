@@ -106,6 +106,8 @@ int ttstub_input_getc (rust_input_handle_t handle);
 int ttstub_input_ungetc (rust_input_handle_t handle, int ch);
 int ttstub_input_close (rust_input_handle_t handle);
 
+void ttstub_runsystem(const unsigned short* cmd, size_t len);
+
 END_EXTERN_C
 
 #endif /* not TECTONIC_CORE_BRIDGE_H */

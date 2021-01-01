@@ -309,3 +309,9 @@ ttstub_input_close(rust_input_handle_t handle)
     }
     return 0;
 }
+
+void
+ttstub_runsystem(const unsigned short* cmd, size_t len)
+{
+    runsystem(TGB->context, cmd, len);
+}

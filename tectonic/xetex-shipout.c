@@ -2192,7 +2192,7 @@ write_out(int32_t p)
             // src/unstable_opts.rs). When this gets actually implemented,
             // uncomment the relevant parts in that file.
 
-            print_cstr("enabled but not implemented yet!");
+            ttstub_runsystem(&str_pool[str_start[str_ptr - TOO_BIG_CHAR]], cur_length());
         }
 
         capture_to_diagnostic(NULL);
