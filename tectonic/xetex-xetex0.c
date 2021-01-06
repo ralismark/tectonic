@@ -7594,7 +7594,14 @@ restart:
                     break;
 
                 case PDF_SHELL_ESCAPE_CODE:
-                    cur_val = 0; /* shellenabledp */
+                    // 0 if it's disabled
+                    // 1 if enabled & unrestricted
+                    // 2 if enabled but restricted (which we don't currently support)
+                    if (shell_escape_enabled) {
+                        cur_val = 1;
+                    } else {
+                        cur_val = 0;
+                    }
                     break;
 
                 case ETEX_VERSION_CODE:
