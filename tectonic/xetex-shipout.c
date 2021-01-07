@@ -2187,7 +2187,13 @@ write_out(int32_t p)
         if (!shell_escape_enabled) {
             print_cstr("disabled");
             print_char('.');
+
+            capture_to_diagnostic(NULL);
         } else {
+            // do this here so that the diagnostic gets emitted *before* the
+            // command is run.
+            capture_to_diagnostic(NULL);
+
             // Currently, -Z shell-escape is implemented but hidden (see
             // src/unstable_opts.rs). When this gets actually implemented,
             // uncomment the relevant parts in that file.
@@ -2195,7 +2201,6 @@ write_out(int32_t p)
             ttstub_runsystem(&str_pool[str_start[str_ptr - TOO_BIG_CHAR]], cur_length());
         }
 
-        capture_to_diagnostic(NULL);
 
         print_nl_cstr("");
         print_ln();
